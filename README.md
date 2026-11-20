@@ -23,11 +23,11 @@ The motion is tuned from frame-by-frame (60fps) analysis of screen recordings of
 ## Install
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.css">
-<script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.css">
+<script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.js"></script>
 ```
 
-The URL pins an exact version (`@v2.7.5`), so later releases never change your project unexpectedly. Other choices:
+The URL pins an exact version (`@v2.7.6`), so later releases never change your project unexpectedly. Other choices:
 
 - `@2` follows the latest 2.x release, so you get fixes automatically. The CDN may take a while to pick up a new release.
 - Copy `liquid-tabbar.css` and `liquid-tabbar.js` into your project.
@@ -44,8 +44,8 @@ Save this as an `.html` file and open it:
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.css">
-  <script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.js"></script>
   <style>
     body { margin: 0; background: #111; color: #fff; font-family: system-ui, sans-serif }
     main { padding: 24px 16px calc(110px + env(safe-area-inset-bottom)) }  /* leave room for the tab bar */
@@ -159,7 +159,7 @@ When the button appears or goes away, the bar's width animates and the button po
 You can load it with `import`. It then registers `window.LiquidTabbar`:
 
 ```js
-import "https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.js";
+import "https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.js";
 const tabs = new window.LiquidTabbar("#tabs", { /* … */ });
 ```
 
@@ -247,7 +247,7 @@ Override the variables on `.ltb` in your CSS (or set them in the element's `styl
 
 Sizes and timing of the animation itself are set through `physics` (below).
 
-To place the bar inside the page instead of fixing it to the bottom, override `position`, `right` and `bottom`, e.g. `.ltb { position: relative; right: auto; bottom: auto; margin-inline: auto }`.
+To place the bar inside the page instead of fixing it to the bottom, override `position`, `right` and `bottom`, e.g. `.ltb { position: relative; right: auto; bottom: auto; margin: 0 calc(50% - var(--ltb-width) / 2) 0 auto }` (the right margin keeps the whole group, side button included, centered; `margin-inline: auto` would center only the bar). To keep it at the bottom of a container (such as a phone mockup or a card), use `position: absolute` and give the container `position: relative`. The `%` in `--ltb-width` is then relative to that container, not the viewport, and the bar re-measures when the container is resized.
 
 ## Styling hooks
 
@@ -328,12 +328,13 @@ liquid-tabbar imitates the iOS liquid-glass tab bar. Some of its effects are bey
 | **Haptics**: a light tap when switching tabs or dragging across them | iOS Safari doesn't support `navigator.vibrate()`, and there is no other vibration API for web pages | Not done |
 | **Highlights that move as the phone tilts** | Needs gyroscope data, which iOS only provides after the user taps to grant permission, which doesn't suit a tab bar | The highlight stays on the top edge |
 | **120Hz animation** on ProMotion screens | iOS Safari caps `requestAnimationFrame` at 60fps by default | The pill physics run on real elapsed time and catch up after dropped frames, so they never slow down, but the frame rate tops out at 60fps |
-| **System gesture integration**, e.g. shrinking the bar on scroll or following the system back swipe | Web pages can't see the state of system gestures | Not built in. If you need it, listen for scroll in your page and change the `--ltb-*` variables |
+| **Following system gestures**, e.g. the system back swipe | Web pages can't see the state of system gestures | Not done. Shrinking on scroll is built in: see `minimizeOnScroll` |
 
 The browser's long-press menu (copy, image preview) is disabled only on the bar itself (`-webkit-touch-callout: none`). The rest of the page is up to your project.
 
 ## Changelog
 
+- **v2.7.6**: When the bar is placed in a container (e.g. `position: absolute` inside a phone mockup or a card), the `%` in `--ltb-width` is now relative to that container instead of the viewport, so the bar no longer sticks out past its left edge; it also re-measures when the container is resized. The fixed bar at the bottom of the screen is unchanged. The README example for placing the bar in the page now keeps the whole group, side button included, centered.
 - **v2.7.5**: The bar is centered with `right` instead of `left: 50%; translate: -50%` and no longer uses `margin-left` for the side button, so iOS Safari has no percentage to leave stale while the width changes; the group stays centered when the side button comes or goes. To place the bar inside the page, override `position`, `right` and `bottom`.
 - **v2.7.4**: New `syncScroll()`: call it after changing the scroll position in code, so that jump doesn't count as scrolling down and shrink the bar.
 - **v2.7.3**: The side button's appear / disappear is now driven by a spring in the library (`physics.side`) instead of CSS transitions: the bar's width and offset are computed from the same value every frame, so they can't drift apart on any Safari version and the group stays centered.

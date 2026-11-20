@@ -5,7 +5,7 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <title>liquid-tabbar on web · The iOS Liquid Glass tab bar, for the web</title>
 <meta name="description" content="The iOS Liquid Glass tab bar, recreated on the web. Vanilla JS + CSS, zero dependencies.">
-<link rel="stylesheet" href="liquid-tabbar.css?v=2.7.5">
+<link rel="stylesheet" href="liquid-tabbar.css?v=2.7.6">
 <style>
  /* ---------- Tokens (page follows the system; the header button overrides) ---------- */
  :root{
@@ -347,7 +347,7 @@
  </div>
 </footer>
 
-<script src="liquid-tabbar.js?v=2.7.5"></script><!-- ?v= 跟著函式庫版本改，瀏覽器才不會拿快取的舊版配新頁面 -->
+<script src="liquid-tabbar.js?v=2.7.6"></script><!-- ?v= 跟著函式庫版本改，瀏覽器才不會拿快取的舊版配新頁面 -->
 <script>
  const VER = LiquidTabbar.version;
  const REPO = "https://github.com/mailoswang/liquid-tabbar-on-web";
@@ -526,14 +526,6 @@
 
  const bars_ = []; // every LiquidTabbar on the page, for re-labeling on a language switch
  const mk = (sel, opt) => { const b = new LiquidTabbar(sel, opt); bars_.push(b); return b; };
- // The bars here sit inside a phone or a card, not on the viewport. --ltb-width's default % is measured
- // against the viewport, so give each one its container's width in px (same formula as the default)
- const fit = () => bars_.forEach(b => {
-  const w = b.el.parentElement.clientWidth;
-  b.el.style.setProperty("--ltb-width", Math.min(w - 42, 380) + "px");
-  b.layout();
- });
- addEventListener("resize", fit);
 
  // ---------- Hero phone ----------
  const heroScr = document.getElementById("heroScr");
@@ -722,7 +714,6 @@
   writeSteps();
   renderHero(); renderC1(); renderC2(); renderC3(); renderC4(); render();
  }
- fit();
  applyText();
 </script>
 </body>

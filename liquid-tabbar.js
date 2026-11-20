@@ -1,4 +1,4 @@
-/*! liquid-tabbar v2.7.5 | MIT | https://github.com/mailoswang/liquid-tabbar-on-web */
+/*! liquid-tabbar v2.7.6 | MIT | https://github.com/mailoswang/liquid-tabbar-on-web */
 
 /* 動畫依 iOS 原生分頁列的螢幕錄影（60fps 逐格）分析：
  *   ① 按下：深色膠囊淡出、浮起成玻璃，放大約 1.3 倍、上下超出底板；整條底板放大約 3–5%
@@ -256,19 +256,28 @@
       this.sw = (this.W - 2 * this.padX) / (this.items.length || 1);
       el.style.setProperty("--ltb-sw", this.sw + "px");
       el.style.setProperty("--ltb-dw", this.W + "px");
-      // 整組寬度（--ltb-width 依視窗換算）：圓鈕用它以分頁列右緣定位。--ltb-width 裡的 % 是相對視窗，
-      // 不能直接在圓鈕的 left 裡用（那裡的 % 是分頁列寬），所以用一個隱形的 fixed 元素量出來
-      if (!this._probe) {
-        this._probe = document.createElement("div");
-        this._probe.setAttribute("aria-hidden", "true");
-        this._probe.style.cssText = "position:fixed;left:0;top:0;height:0;visibility:hidden;pointer-events:none";
-        document.body.appendChild(this._probe);
-      }
-      this._probe.style.width = cs.getPropertyValue("--ltb-width").trim() || "0px";
-      const gw = this._probe.offsetWidth;
+      // 整組寬度（--ltb-width 換算成 px）：圓鈕用它以分頁列右緣定位。--ltb-width 裡的 % 不能直接在圓鈕的 left 裡用
+      // （那裡的 % 是分頁列寬），所以量出來：暫時在分頁列旁邊插一個同樣 position 的隱形元素，% 就跟分頁列相對同一個
+      // 容器（固定在底部時是視窗；放進手機框、卡片等容器時是那個容器），量完立刻移除，不會畫出來
+      const gw = this._measure(cs);
       if (gw) el.style.setProperty("--ltb-gw", gw + "px");
       this._render();
       return this;
+    }
+
+    _measure(cs) {
+      const el = this.el, parent = el.parentNode;
+      if (!parent) return 0;
+      const pos = cs.position, out = pos === "fixed" || pos === "absolute";
+      const probe = document.createElement("div");
+      probe.setAttribute("aria-hidden", "true");
+      probe.style.cssText = "position:" + (out ? pos : "relative") +
+        ";left:0;top:0;height:0;margin:0;padding:0;border:0;box-sizing:border-box;flex:none;visibility:hidden;pointer-events:none";
+      probe.style.width = cs.getPropertyValue("--ltb-width").trim() || "0px";
+      parent.insertBefore(probe, el);
+      const w = probe.offsetWidth;
+      probe.remove();
+      return w;
     }
 
     destroy() {
@@ -278,7 +287,6 @@
       if (this._scrollOff) this._scrollOff();
       clearTimeout(this._sideT);
       this._css = {};
-      if (this._probe) this._probe.remove();
       this.el.classList.remove("ltb", "ltb-noind", "ltb-has-side", "ltb-min", "ltb-side-vis");
       OWN_PROPS.forEach(p => this.el.style.removeProperty(p));
       this.el.innerHTML = "";
@@ -562,12 +570,14 @@
           if (this.sw !== prev && this.index >= 0 && !this._g) this._go(this._center(this.index), true);
         });
         ro.observe(el);
+        // 不是固定在視窗上時，% 相對的是容器：容器變寬變窄（視窗沒變）也要重算
+        if (getComputedStyle(el).position !== "fixed" && el.parentElement) ro.observe(el.parentElement);
         this._off.push(() => ro.disconnect());
       }
     }
   }
 
-  LiquidTabbar.version = "2.7.5";
+  LiquidTabbar.version = "2.7.6";
   LiquidTabbar.physics = PHYSICS;
   LiquidTabbar.defaults = DEFAULTS;
   return LiquidTabbar;

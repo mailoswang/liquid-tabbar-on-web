@@ -23,11 +23,11 @@
 ## 安裝
 
 ```html
-<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.css">
-<script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.js"></script>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.css">
+<script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.js"></script>
 ```
 
-網址裡固定完整版本號（`@v2.7.5`），之後函式庫更新也不會突然改變你的專案。其他選擇：
+網址裡固定完整版本號（`@v2.7.6`），之後函式庫更新也不會突然改變你的專案。其他選擇：
 
 - `@2`：自動跟到 2.x 的最新版，修正會自動套用；新版發布後 CDN 可能要一段時間才會更新。
 - 直接把 `liquid-tabbar.css`、`liquid-tabbar.js` 複製進專案。
@@ -44,8 +44,8 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.css">
-  <script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.css">
+  <script src="https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.js"></script>
   <style>
     body { margin: 0; background: #111; color: #fff; font-family: system-ui, sans-serif }
     main { padding: 24px 16px calc(110px + env(safe-area-inset-bottom)) }  /* 底部留空間給分頁列 */
@@ -159,7 +159,7 @@ const tabs = new LiquidTabbar("#tabs", { items: ITEMS, onSide: side => history.b
 用 `import` 載入也可以，載入後從 `window.LiquidTabbar` 取用：
 
 ```js
-import "https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.5/liquid-tabbar.min.js";
+import "https://cdn.jsdelivr.net/gh/mailoswang/liquid-tabbar-on-web@v2.7.6/liquid-tabbar.min.js";
 const tabs = new window.LiquidTabbar("#tabs", { /* … */ });
 ```
 
@@ -247,7 +247,7 @@ tabs.minimized                       // 目前是否縮小
 
 動畫本身的大小與節奏用 `physics` 調整（見下方）。
 
-想把分頁列放在頁面裡而不是固定在底部，覆寫 `position`、`right`、`bottom` 即可，例如 `.ltb { position: relative; right: auto; bottom: auto; margin-inline: auto }`。
+想把分頁列放在頁面裡而不是固定在底部，覆寫 `position`、`right`、`bottom` 即可，例如 `.ltb { position: relative; right: auto; bottom: auto; margin: 0 calc(50% - var(--ltb-width) / 2) 0 auto }`（用右邊的 margin 定位，含圓鈕的整組才會置中；`margin-inline: auto` 只會讓分頁列本身置中）。想讓它貼在某個容器（例如手機框、卡片）的底部，改用 `position: absolute`，並替容器加上 `position: relative`；這時 `--ltb-width` 裡的 `%` 是相對那個容器而不是視窗，容器大小改變時也會自動重算。
 
 ## 樣式掛鉤
 
@@ -328,12 +328,13 @@ liquid-tabbar 模仿 iOS 的液態玻璃分頁列，但以下效果受限於目�
 | **觸覺回饋**：切換分頁或拖過每一格時輕震一下 | iOS Safari 不支援 `navigator.vibrate()`，網頁沒有可用的震動 API | 不做 |
 | **隨手機傾斜移動的高光** | 需要陀螺儀資料，iOS 上必須由使用者點按同意權限，不適合用在分頁列 | 高光固定在上緣 |
 | **120Hz 動畫**：ProMotion 螢幕上的更新率 | iOS Safari 預設把 `requestAnimationFrame` 限制在 60fps | 膠囊物理依實際經過的時間計算，掉幀時直接補到正確位置，不會變慢；但最高就是 60fps |
-| **與系統手勢整合**：例如捲動時分頁列自動縮小、跟系統的返回滑動連動 | 網頁拿不到系統手勢的狀態 | 不內建；需要的話可以在自己的頁面監聽捲動，再改 `--ltb-*` 變數 |
+| **跟系統手勢連動**：例如系統的返回滑動 | 網頁拿不到系統手勢的狀態 | 不做。捲動時縮小已經內建，見 `minimizeOnScroll` |
 
 另外，瀏覽器的長按選單（拷貝、預覽圖片）只在分頁列本身關掉（`-webkit-touch-callout: none`），頁面其他地方由你的專案決定。
 
 ## 版本紀錄
 
+- **v2.7.6**：分頁列放在容器裡時（例如在手機框或卡片裡用 `position: absolute`），`--ltb-width` 裡的 `%` 改成相對那個容器而不是視窗，不會再超出容器左邊；容器大小改變時也會自動重算。固定在畫面底部的用法不受影響。README 裡放進頁面的範例改成含圓鈕的整組都置中。
 - **v2.7.5**：分頁列改用 `right` 置中，不再用 `left: 50%; translate: -50%`，圓鈕讓位也不再用 `margin-left`，iOS Safari 在寬度變化時沒有百分比可以沿用舊值，圓鈕出現或收起時整組維持在中間。想把分頁列放進頁面裡，改成覆寫 `position`、`right`、`bottom`。
 - **v2.7.4**：新增 `syncScroll()`：用程式改了捲動位置後呼叫，那次跳動不算往下捲，分頁列不會因此縮小。
 - **v2.7.3**：左邊圓鈕的出現／收起改由函式庫的彈簧驅動（`physics.side`），不再用 CSS 過渡：分頁列的寬度與位移每一幀從同一個值算出來，任何版本的 Safari 都不會不同步，整組維持在中間。
